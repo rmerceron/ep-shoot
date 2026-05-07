@@ -28,6 +28,9 @@ size = Vector3(0.4, 0.15, 0.05)
 [sub_resource type="StandardMaterial3D" id="Mat_join"]
 albedo_color = Color(0.2, 0.4, 0.8, 1)
 
+[sub_resource type="StandardMaterial3D" id="Mat_training"]
+albedo_color = Color(1, 0.6, 0.1, 1)
+
 [node name="Menu" type="Node3D" unique_id=1456189057]
 script = ExtResource("1_menu")
 
@@ -96,6 +99,22 @@ shape = SubResource("BoxShape3D_btn")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
 pixel_size = 0.003
 text = "JOIN"
+
+[node name="BtnTraining" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, -1.5)
+
+[node name="Mesh" type="MeshInstance3D" parent="BtnTraining"]
+mesh = SubResource("BoxMesh_btn")
+surface_material_override/0 = SubResource("Mat_training")
+
+[node name="Collision" type="CollisionShape3D" parent="BtnTraining"]
+shape = SubResource("BoxShape3D_btn")
+
+[node name="Label" type="Label3D" parent="BtnTraining"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
+pixel_size = 0.003
+text = "TRAINING"
+font_size = 32
 
 [node name="DirLight" type="DirectionalLight3D" parent="." unique_id=1861508730]
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)

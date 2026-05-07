@@ -1,0 +1,205 @@
+[gd_scene format=3 uid="uid://b1training"]
+
+[ext_resource type="Script" path="res://scripts/training.gd" id="1_train"]
+[ext_resource type="Script" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="PackedScene" uid="uid://b1playervr" path="res://scenes/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://b1target" path="res://scenes/Target.tscn" id="4_target"]
+[ext_resource type="Script" path="res://scripts/target.gd" id="5_targetscript"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.32, 0.34, 0.36, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(10, 0.1, 10)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+size = Vector3(10, 3, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.55, 0.55, 0.6, 1)
+roughness = 0.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(10, 3, 0.1)
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.18, 0.22, 0.32, 1)
+sky_horizon_color = Color(0.4, 0.45, 0.55, 1)
+ground_horizon_color = Color(0.4, 0.45, 0.55, 1)
+
+[sub_resource type="Sky" id="Sky_train"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Env_train"]
+background_mode = 2
+sky = SubResource("Sky_train")
+ambient_light_source = 3
+ambient_light_color = Color(0.6, 0.65, 0.75, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_btn"]
+size = Vector3(0.6, 0.6, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="Mat_reset"]
+albedo_color = Color(0.2, 0.5, 1.0, 1)
+emission_enabled = true
+emission = Color(0.1, 0.3, 0.7, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_exit"]
+albedo_color = Color(1.0, 0.6, 0.1, 1)
+emission_enabled = true
+emission = Color(0.7, 0.3, 0.05, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_btn"]
+size = Vector3(0.6, 0.6, 0.05)
+
+[node name="Training" type="Node3D"]
+script = ExtResource("1_train")
+player_scene = ExtResource("3_player")
+spawn_path = NodePath("PlayerSpawn")
+
+[node name="OpenXRSetup" type="Node" parent="."]
+script = ExtResource("2_xr")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_train")
+
+[node name="DirLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("Mat_floor")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallNorth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -5)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallNorth"]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallNorth"]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallSouth" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 5)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallSouth"]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallSouth"]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -5, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
+
+[node name="Targets" type="Node3D" parent="."]
+
+[node name="Target1" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)
+
+[node name="Target2" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -2)
+
+[node name="Target3" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -3)
+
+[node name="Target4" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -4)
+
+[node name="Target5" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -4)
+
+[node name="MovingTarget" parent="Targets" instance=ExtResource("4_target")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.5)
+oscillate = true
+oscillate_amplitude = 2.5
+oscillate_speed = 1.2
+
+[node name="BtnReset" type="AnimatableBody3D" parent="."]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4.4, 1.5, -2)
+script = ExtResource("5_targetscript")
+oneshot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BtnReset"]
+shape = SubResource("BoxShape3D_btn")
+
+[node name="Mesh" type="Node3D" parent="BtnReset"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BtnReset/Mesh"]
+mesh = SubResource("BoxMesh_btn")
+surface_material_override/0 = SubResource("Mat_reset")
+
+[node name="Label" type="Label3D" parent="BtnReset/Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+pixel_size = 0.005
+text = "RESET"
+font_size = 48
+
+[node name="BtnExit" type="AnimatableBody3D" parent="."]
+transform = Transform3D(0, 0, 1, 0, 1, 0, -1, 0, 0, 4.4, 1.5, -2)
+script = ExtResource("5_targetscript")
+oneshot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BtnExit"]
+shape = SubResource("BoxShape3D_btn")
+
+[node name="Mesh" type="Node3D" parent="BtnExit"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BtnExit/Mesh"]
+mesh = SubResource("BoxMesh_btn")
+surface_material_override/0 = SubResource("Mat_exit")
+
+[node name="Label" type="Label3D" parent="BtnExit/Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+pixel_size = 0.005
+text = "EXIT"
+font_size = 48
+
+[node name="HUD" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, -4)
+
+[node name="HitLabel" type="Label3D" parent="HUD"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.6, 0, 0)
+pixel_size = 0.005
+text = "Hits : 0"
+font_size = 48
+
+[node name="TimeLabel" type="Label3D" parent="HUD"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 0, 0)
+pixel_size = 0.005
+text = "Temps : 0.0s"
+font_size = 48

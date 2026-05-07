@@ -77,12 +77,16 @@ func _perform_shot() -> void:
 		hit_point = result.position
 		var hit_node = result.collider
 		if hit_node and hit_node.has_method("take_damage"):
-			var attacker_id: int = multiplayer.get_unique_id()
-			# RPC sur l'autorité de la cible (le joueur touché applique son
-			# propre dégât, c'est l'approche simple/sûre côté VR LAN).
-			hit_node.take_damage.rpc_id(
-				hit_node.get_multiplayer_authority(), damage, attacker_id
-			)
+			var attacker_id: int = multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 0
+			if multiplayer.has_multiplayer_peer():
+				# Mode multi : RPC sur l'autorité de la cible (le joueur
+				# touché applique son propre dégât).
+				hit_node.take_damage.rpc_id(
+					hit_node.get_multiplayer_authority(), damage, attacker_id
+				)
+			else:
+				# Mode solo (entraînement) : appel direct.
+				hit_node.take_damage(damage, attacker_id)
 
 	fired.emit(origin, hit_point)
 	_show_tracer(origin, hit_point)

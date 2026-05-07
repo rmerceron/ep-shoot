@@ -8,6 +8,7 @@ extends Node3D
 @onready var ip_input_label: Label3D = $IpInput/Label
 @onready var btn_host: Area3D = $BtnHost
 @onready var btn_join: Area3D = $BtnJoin
+@onready var btn_training: Area3D = $BtnTraining
 @onready var pointer: Node = $XROrigin3D/RightController/VRPointer
 
 var ip_text := "127.0.0.1"
@@ -22,6 +23,7 @@ func _ready() -> void:
 	# Fallback souris pour debug en éditeur sans casque
 	btn_host.input_event.connect(_on_btn_input.bind("host"))
 	btn_join.input_event.connect(_on_btn_input.bind("join"))
+	btn_training.input_event.connect(_on_btn_input.bind("training"))
 	_update_ip_display()
 
 
@@ -35,6 +37,8 @@ func _on_pointer_clicked(area: Area3D) -> void:
 		_handle_action("host")
 	elif area == btn_join:
 		_handle_action("join")
+	elif area == btn_training:
+		_handle_action("training")
 
 
 func _on_btn_input(_camera, event: InputEvent, _pos, _normal, _idx, action: String) -> void:
@@ -50,6 +54,9 @@ func _handle_action(action: String) -> void:
 		"join":
 			status_label.text = "Connexion à %s ..." % ip_text
 			NetworkManager.join_game(ip_text)
+		"training":
+			status_label.text = "Lancement entraînement..."
+			get_tree().change_scene_to_file("res://scenes/Training.tscn")
 
 
 func _on_connected() -> void:
