@@ -1,0 +1,37 @@
+[gd_scene load_steps=6 format=3 uid="uid://b1vrpointer"]
+
+[ext_resource type="Script" path="res://scripts/vr_pointer.gd" id="1_vrp"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_laser"]
+size = Vector3(0.004, 0.004, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_laser"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.6, 1, 0.7)
+transparency = 1
+
+[sub_resource type="SphereMesh" id="SphereMesh_dot"]
+radius = 0.015
+height = 0.03
+radial_segments = 12
+rings = 6
+
+[sub_resource type="StandardMaterial3D" id="Mat_dot"]
+shading_mode = 0
+albedo_color = Color(0.3, 0.6, 1, 1)
+
+[node name="VRPointer" type="Node3D"]
+script = ExtResource("1_vrp")
+
+[node name="RayCast3D" type="RayCast3D" parent="."]
+target_position = Vector3(0, 0, -10)
+collide_with_areas = true
+collide_with_bodies = false
+
+[node name="Laser" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_laser")
+surface_material_override/0 = SubResource("Mat_laser")
+
+[node name="Dot" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_dot")
+surface_material_override/0 = SubResource("Mat_dot")

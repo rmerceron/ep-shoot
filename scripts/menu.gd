@@ -1,9 +1,6 @@
 extends Node3D
 ## Menu VR — permet de Host ou Join. UI 3D simple en world-space.
-##
-## Sur Quest, on ne peut pas avoir de "fenêtre" 2D classique. On utilise un
-## SubViewport texturé sur un mesh, ou plus simplement (ici) des boutons 3D
-## (Area3D + label) que l'on touche/pointe avec le contrôleur.
+## Interaction via VRPointer (laser sur le contrôleur droit).
 
 @export var arena_scene: PackedScene
 
@@ -11,6 +8,7 @@ extends Node3D
 @onready var ip_input_label: Label3D = $IpInput/Label
 @onready var btn_host: Area3D = $BtnHost
 @onready var btn_join: Area3D = $BtnJoin
+@onready var pointer: Node = $XROrigin3D/RightController/VRPointer
 
 var ip_text := "127.0.0.1"
 
@@ -19,6 +17,9 @@ func _ready() -> void:
 	NetworkManager.connection_succeeded.connect(_on_connected)
 	NetworkManager.connection_failed.connect(_on_connection_failed)
 	NetworkManager.peer_connected.connect(_on_peer_connected)
+	if pointer:
+		pointer.pointer_clicked.connect(_on_pointer_clicked)
+	# Fallback souris pour debug en éditeur sans casque
 	btn_host.input_event.connect(_on_btn_input.bind("host"))
 	btn_join.input_event.connect(_on_btn_input.bind("join"))
 	_update_ip_display()
@@ -27,6 +28,13 @@ func _ready() -> void:
 func _update_ip_display() -> void:
 	if ip_input_label:
 		ip_input_label.text = "IP host : %s" % ip_text
+
+
+func _on_pointer_clicked(area: Area3D) -> void:
+	if area == btn_host:
+		_handle_action("host")
+	elif area == btn_join:
+		_handle_action("join")
 
 
 func _on_btn_input(_camera, event: InputEvent, _pos, _normal, _idx, action: String) -> void:

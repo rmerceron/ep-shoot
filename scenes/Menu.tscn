@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bgkrrv4nftqlj" path="res://scripts/menu.gd" id="1_menu"]
 [ext_resource type="Script" uid="uid://d1uehdr7lpffy" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="PackedScene" uid="uid://b1vrpointer" path="res://scenes/VRPointer.tscn" id="3_pointer"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
 sky_horizon_color = Color(0.6, 0.7, 0.8, 1)
@@ -45,6 +46,8 @@ tracker = &"left_hand"
 
 [node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=641468940]
 tracker = &"right_hand"
+
+[node name="VRPointer" parent="XROrigin3D/RightController" instance=ExtResource("3_pointer")]
 
 [node name="Title" type="Label3D" parent="." unique_id=1099717602]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -1.5)
