@@ -103,6 +103,31 @@ Une fois le plugin Meta Quest installé via AssetLib :
 
 Répète pour le 2e casque.
 
+## Mode entraînement (solo)
+
+Pour tester les armes sans dépendre du réseau ni d'un deuxième casque :
+
+1. Au menu, vise et tire sur le bouton **TRAINING** (orange).
+2. Tu arrives dans une arène 10×10m avec :
+   - 5 silhouettes rouges fixes en pattern de tir
+   - 1 cible mobile qui oscille horizontalement
+   - Un bouton **RESET** bleu sur le mur de gauche — **tire dessus** pour
+     remettre les compteurs et relever toutes les cibles tombées
+   - Un bouton **EXIT** orange sur le mur de droite — **tire dessus** pour
+     revenir au menu
+3. HUD en l'air devant toi : nombre de hits + temps écoulé.
+
+Les cibles tombées (knockdown animé) se relèvent automatiquement après 2s.
+Tu peux ajuster les paramètres dans `Training.tscn` (sélectionne une cible
+et regarde l'inspector) :
+- `hp` — points de vie
+- `respawn_delay` — délai de relevage en secondes
+- `oscillate` / `oscillate_amplitude` / `oscillate_speed` — pour rendre une
+  cible mobile
+
+C'est aussi le mode idéal pour tester un nouveau modèle d'arme depuis
+l'asset Weapon System sans avoir à monter une partie multi.
+
 ## Lancement d'une partie
 
 ### Réseau
