@@ -1,0 +1,28 @@
+# Godot 4+
+.godot/
+.import/
+*.translation
+
+# Build template Android (régénéré par Godot)
+/android/
+
+# Sorties d'export
+/builds/
+/exports/
+*.apk
+*.aab
+*.exe
+*.pck
+*.zip
+
+# Secrets d'export (keystore passwords, etc.)
+export_credentials.cfg
+
+# OS / éditeurs
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.idea/
+.vscode/
+*.code-workspace

@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://b1weapon"]
+
+[ext_resource type="Script" uid="uid://c2cnr8upjti4d" path="res://scripts/weapon.gd" id="1_weapon"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_body"]
+size = Vector3(0.06, 0.1, 0.25)
+
+[sub_resource type="StandardMaterial3D" id="Mat_weapon"]
+albedo_color = Color(0.15, 0.15, 0.15, 1)
+metallic = 0.6
+roughness = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_tracer"]
+top_radius = 0.005
+bottom_radius = 0.005
+height = 1.0
+radial_segments = 6
+
+[sub_resource type="StandardMaterial3D" id="Mat_tracer"]
+shading_mode = 0
+albedo_color = Color(1, 0.9, 0.3, 1)
+
+[node name="Weapon" type="Node3D" unique_id=57328642]
+script = ExtResource("1_weapon")
+
+[node name="Mesh" type="MeshInstance3D" parent="." unique_id=1070808795]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.1)
+mesh = SubResource("BoxMesh_body")
+surface_material_override/0 = SubResource("Mat_weapon")
+
+[node name="Muzzle" type="Node3D" parent="." unique_id=1176340133]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.23)
+
+[node name="Tracer" type="MeshInstance3D" parent="." unique_id=2066376159]
+visible = false
+mesh = SubResource("CylinderMesh_tracer")
+surface_material_override/0 = SubResource("Mat_tracer")
+
+[node name="FireRateTimer" type="Timer" parent="." unique_id=607198563]
+one_shot = true
