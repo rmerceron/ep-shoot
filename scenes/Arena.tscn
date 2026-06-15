@@ -1,0 +1,128 @@
+[gd_scene format=3 uid="uid://d31x0upys2x4v"]
+
+[ext_resource type="Script" path="res://scripts/arena.gd" id="1_arena"]
+[ext_resource type="Script" uid="uid://d1uehdr7lpffy" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="Script" path="res://scripts/calibration.gd" id="3_cal"]
+[ext_resource type="PackedScene" uid="uid://b1playervr" path="res://scenes/Player.tscn" id="4_player"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.18, 0.22, 0.32, 1)
+sky_horizon_color = Color(0.4, 0.45, 0.55, 1)
+ground_horizon_color = Color(0.4, 0.45, 0.55, 1)
+
+[sub_resource type="Sky" id="Sky_arena"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Env_arena"]
+background_mode = 2
+sky = SubResource("Sky_arena")
+ambient_light_source = 3
+ambient_light_color = Color(0.6, 0.65, 0.75, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(8, 0.1, 8)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.3, 0.32, 0.35, 1)
+roughness = 0.9
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(8, 0.1, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wall"]
+size = Vector3(8, 3, 0.1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.5, 0.5, 0.55, 1)
+roughness = 0.7
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall"]
+size = Vector3(8, 3, 0.1)
+
+[node name="Arena" type="Node3D" unique_id=653257567]
+script = ExtResource("1_arena")
+player_scene = ExtResource("4_player")
+spawn_host_path = NodePath("SpawnHost")
+spawn_client_path = NodePath("SpawnClient")
+calibration_path = NodePath("Calibration")
+
+[node name="OpenXRSetup" type="Node" parent="." unique_id=29759982]
+script = ExtResource("2_xr")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=529926390]
+environment = SubResource("Env_arena")
+
+[node name="DirLight" type="DirectionalLight3D" parent="." unique_id=1833664382]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="." unique_id=84392427]
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=1346038524]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("Mat_floor")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor" unique_id=746410672]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallNorth" type="StaticBody3D" parent="." unique_id=722927496]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -4)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallNorth" unique_id=1117604616]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallNorth" unique_id=1934590983]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallSouth" type="StaticBody3D" parent="." unique_id=81883710]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 4)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallSouth" unique_id=1118981447]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallSouth" unique_id=1967773345]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallEast" type="StaticBody3D" parent="." unique_id=394404516]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 4, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallEast" unique_id=793601267]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallEast" unique_id=1849202015]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="WallWest" type="StaticBody3D" parent="." unique_id=136439551]
+transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -4, 1.5, 0)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallWest" unique_id=1120897800]
+mesh = SubResource("BoxMesh_wall")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallWest" unique_id=1704397746]
+shape = SubResource("BoxShape3D_wall")
+
+[node name="SpawnHost" type="Marker3D" parent="." unique_id=300072948]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.5)
+
+[node name="SpawnClient" type="Marker3D" parent="." unique_id=1132384406]
+transform = Transform3D(-1, 0, 0, 0, 1, 0, 0, 0, -1, 0, 0, 1.5)
+
+[node name="Calibration" type="Node3D" parent="." unique_id=177039962]
+script = ExtResource("3_cal")
+
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=147795381]
+_spawnable_scenes = PackedStringArray("uid://b1playervr")
+spawn_path = NodePath("..")
+
+[node name="HUD" type="Node3D" parent="." unique_id=8110611]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+
+[node name="ScoreLabel" type="Label3D" parent="HUD" unique_id=1331588530]
+billboard = 1
+text = "0  -  0"
+font_size = 64

@@ -10,11 +10,13 @@ extends CharacterBody3D
 ##   │       └── WeaponMount/Weapon (instance de Weapon.tscn)
 ##   └── BodyCollision (CollisionShape3D, capsule)
 ##
-## Déplacement : stick gauche = avancer/strafe relatif au regard ;
-## stick droit (gauche/droite) = rotation par paliers (snap-turn, confort VR).
+## Déplacement : stick gauche = avancer/strafe relatif au regard.
+## Stick droit : rotation par paliers (snap-turn) DÉSACTIVÉE par défaut
+## (enable_snap_turn = false). La rotation se fait physiquement avec le casque.
 
 @export var move_speed: float = 2.5
 @export var gravity: float = 9.8
+@export var enable_snap_turn: bool = false  # rotation au stick droit (off par défaut)
 @export var snap_turn_degrees: float = 30.0
 @export var snap_turn_deadzone: float = 0.7
 @export var move_deadzone: float = 0.15
@@ -38,7 +40,8 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	_handle_movement(delta)
-	_handle_snap_turn()
+	if enable_snap_turn:
+		_handle_snap_turn()
 	_follow_head_height()
 
 
