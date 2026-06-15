@@ -43,7 +43,9 @@ ep-shoot/
 
 - **Stick gauche** : se déplacer (avant/arrière/strafe), relatif au regard.
 - **Stick droit (gauche/droite)** : rotation par paliers (snap-turn, confort VR).
-- **Gâchette droite** : tirer.
+- **Gâchette droite** : tirer (un laser de visée part du canon).
+- **A / X** : recommencer le parcours à tout moment.
+- **B / Y** : revenir au menu à tout moment.
 - Dans les menus : pointe avec le **laser** (contrôleur droit) et tire.
 
 Les réglages de locomotion sont exposés sur `Player.tscn` (inspector du nœud
@@ -60,8 +62,11 @@ racine `Player`) : `move_speed`, `snap_turn_degrees`, `gravity`, deadzones.
 4. Quelques **caisses** servent de couverture / décor.
 5. Élimine **toutes** les cibles (14 au total) pour terminer. Le HUD ancré
    devant toi affiche `Cibles : x / 14` et le temps.
-6. À la fin, un panneau **PARCOURS TERMINÉ** affiche ton temps. Tire sur
-   **RESTART** (bleu) pour recommencer ou **EXIT** (orange) pour revenir au menu.
+6. À la fin, un panneau **PARCOURS TERMINÉ** affiche ton temps. Les boutons
+   **RESTART** (bleu) et **EXIT** (orange) apparaissent alors au mur du fond —
+   ils restent **cachés pendant le parcours** pour éviter de tirer dessus par
+   erreur. Tire dessus, ou utilise les raccourcis manette **A/X** (recommencer)
+   et **B/Y** (quitter), disponibles à tout moment.
 
 ### Le mode entraînement (Training.tscn)
 

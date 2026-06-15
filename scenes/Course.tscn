@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://b1course"]
+[gd_scene load_steps=25 format=3 uid="uid://b1course"]
 
 [ext_resource type="Script" path="res://scripts/course.gd" id="1_course"]
 [ext_resource type="Script" path="res://scripts/openxr_setup.gd" id="2_xr"]
@@ -288,6 +288,7 @@ horizontal_alignment = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.2, -44.5)
 script = ExtResource("5_targetscript")
 oneshot = true
+start_active = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BtnRestart"]
 shape = SubResource("BoxShape3D_btn")
@@ -308,6 +309,7 @@ font_size = 40
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.2, -44.5)
 script = ExtResource("5_targetscript")
 oneshot = true
+start_active = false
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BtnExit"]
 shape = SubResource("BoxShape3D_btn")

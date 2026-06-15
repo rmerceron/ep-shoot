@@ -4,12 +4,10 @@ extends Node3D
 ## éliminé. Les ennemis sont organisés en vagues réveillées par des zones de
 ## déclenchement (Area3D du groupe "wave_trigger").
 ##
-## Conventions de scène :
-##  - Ennemis : nodes dans le groupe "enemy" (instances de Target, oneshot=true).
-##    Ceux d'une vague à déclencher ont start_active=false.
-##  - Déclencheur : Area3D dans le groupe "wave_trigger". Quand le joueur entre,
-##    tous les ennemis descendants de son parent sont activés (pop-up).
-##  - Boutons d'action : $BtnRestart et $BtnExit (Target oneshot tirables).
+## Boutons RESTART / EXIT : cachés tant que le parcours n'est pas terminé
+## (pour éviter de tirer dessus par erreur), révélés à la fin.
+## Raccourcis manette dispo à tout moment :
+##   A / X (ax_button) = recommencer   |   B / Y (by_button) = quitter au menu
 
 @export var player_scene: PackedScene
 @export var spawn_path: NodePath
@@ -34,6 +32,7 @@ func _ready() -> void:
 		if spawn:
 			_player.global_position = spawn.global_position
 		_attach_hud(_player)
+		_connect_controller_shortcuts(_player)
 
 	# Recense les ennemis et connecte leur élimination.
 	var enemies := get_tree().get_nodes_in_group("enemy")
@@ -46,7 +45,7 @@ func _ready() -> void:
 		if trig is Area3D:
 			trig.body_entered.connect(_on_wave_trigger.bind(trig))
 
-	# Boutons d'action (tirables).
+	# Boutons d'action (tirables) — connectés mais cachés jusqu'à la fin.
 	if btn_restart and btn_restart.has_signal("knocked_down"):
 		btn_restart.knocked_down.connect(_restart)
 	if btn_exit and btn_exit.has_signal("knocked_down"):
@@ -79,7 +78,6 @@ func _attach_hud(player: Node) -> void:
 	_targets_label.font_size = 48
 	_targets_label.modulate = Color(1, 0.85, 0.3)
 	_targets_label.position = Vector3(-0.18, 0, 0)
-	_targets_label.billboard = BaseMaterial3D.BILLBOARD_DISABLED
 	hud.add_child(_targets_label)
 
 	_time_label = Label3D.new()
@@ -87,6 +85,30 @@ func _attach_hud(player: Node) -> void:
 	_time_label.font_size = 48
 	_time_label.position = Vector3(0.18, 0, 0)
 	hud.add_child(_time_label)
+
+	# Indice raccourcis manette.
+	var hint := Label3D.new()
+	hint.pixel_size = 0.0012
+	hint.font_size = 40
+	hint.modulate = Color(0.7, 0.75, 0.8)
+	hint.position = Vector3(0, -0.06, 0)
+	hint.text = "A/X : recommencer    B/Y : quitter"
+	hud.add_child(hint)
+
+
+func _connect_controller_shortcuts(player: Node) -> void:
+	for path in ["XROrigin3D/LeftController", "XROrigin3D/RightController"]:
+		var c := player.get_node_or_null(path)
+		if c:
+			c.button_pressed.connect(_on_controller_button)
+
+
+func _on_controller_button(button_name: String) -> void:
+	match button_name:
+		"ax_button":
+			_restart()
+		"by_button":
+			_exit_to_menu()
 
 
 func _on_wave_trigger(body: Node, trig: Area3D) -> void:
@@ -120,9 +142,14 @@ func _on_targets_changed(eliminated: int, total: int) -> void:
 
 
 func _on_course_finished(time_seconds: float) -> void:
+	# Révèle les boutons tirables maintenant que le parcours est fini.
+	if btn_restart and btn_restart.has_method("activate"):
+		btn_restart.activate()
+	if btn_exit and btn_exit.has_method("activate"):
+		btn_exit.activate()
 	if end_label:
 		end_label.visible = true
-		end_label.text = "PARCOURS TERMINÉ\nTemps : %.1f s\n\nTire sur RESTART ou EXIT" % time_seconds
+		end_label.text = "PARCOURS TERMINE\nTemps : %.1f s\n\nTire sur RESTART / EXIT\n(ou A/X = recommencer, B/Y = quitter)" % time_seconds
 
 
 func _restart() -> void:
