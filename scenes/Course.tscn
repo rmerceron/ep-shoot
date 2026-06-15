@@ -1,0 +1,325 @@
+[gd_scene format=3 uid="uid://b1course"]
+
+[ext_resource type="Script" path="res://scripts/course.gd" id="1_course"]
+[ext_resource type="Script" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="PackedScene" uid="uid://b1playervr" path="res://scenes/Player.tscn" id="3_player"]
+[ext_resource type="PackedScene" uid="uid://b1target" path="res://scenes/Target.tscn" id="4_target"]
+[ext_resource type="Script" path="res://scripts/target.gd" id="5_targetscript"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
+sky_top_color = Color(0.16, 0.18, 0.24, 1)
+sky_horizon_color = Color(0.35, 0.38, 0.45, 1)
+ground_horizon_color = Color(0.35, 0.38, 0.45, 1)
+
+[sub_resource type="Sky" id="Sky_course"]
+sky_material = SubResource("ProceduralSkyMaterial_sky")
+
+[sub_resource type="Environment" id="Env_course"]
+background_mode = 2
+sky = SubResource("Sky_course")
+ambient_light_source = 3
+ambient_light_color = Color(0.55, 0.6, 0.7, 1)
+ambient_light_energy = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(8, 0.2, 54)
+
+[sub_resource type="StandardMaterial3D" id="Mat_floor"]
+albedo_color = Color(0.3, 0.32, 0.34, 1)
+roughness = 0.95
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(8, 0.2, 54)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wallLong"]
+size = Vector3(0.2, 3, 54)
+
+[sub_resource type="StandardMaterial3D" id="Mat_wall"]
+albedo_color = Color(0.5, 0.5, 0.55, 1)
+roughness = 0.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wallLong"]
+size = Vector3(0.2, 3, 54)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wallEnd"]
+size = Vector3(8, 3, 0.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wallEnd"]
+size = Vector3(8, 3, 0.2)
+
+[sub_resource type="BoxMesh" id="BoxMesh_crate"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="Mat_crate"]
+albedo_color = Color(0.45, 0.36, 0.22, 1)
+roughness = 0.85
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_crate"]
+size = Vector3(1, 1, 1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_trigger"]
+size = Vector3(8, 3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_btn"]
+size = Vector3(0.6, 0.6, 0.05)
+
+[sub_resource type="StandardMaterial3D" id="Mat_restart"]
+albedo_color = Color(0.2, 0.5, 1, 1)
+emission_enabled = true
+emission = Color(0.1, 0.3, 0.7, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="StandardMaterial3D" id="Mat_exit"]
+albedo_color = Color(1, 0.6, 0.1, 1)
+emission_enabled = true
+emission = Color(0.7, 0.3, 0.05, 1)
+emission_energy_multiplier = 0.6
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_btn"]
+size = Vector3(0.6, 0.6, 0.05)
+
+[node name="Course" type="Node3D"]
+script = ExtResource("1_course")
+player_scene = ExtResource("3_player")
+spawn_path = NodePath("PlayerSpawn")
+
+[node name="OpenXRSetup" type="Node" parent="."]
+script = ExtResource("2_xr")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Env_course")
+
+[node name="DirLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)
+shadow_enabled = true
+
+[node name="Floor" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, -20)
+
+[node name="Mesh" type="MeshInstance3D" parent="Floor"]
+mesh = SubResource("BoxMesh_floor")
+surface_material_override/0 = SubResource("Mat_floor")
+
+[node name="Collision" type="CollisionShape3D" parent="Floor"]
+shape = SubResource("BoxShape3D_floor")
+
+[node name="WallWest" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1.5, -20)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallWest"]
+mesh = SubResource("BoxMesh_wallLong")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallWest"]
+shape = SubResource("BoxShape3D_wallLong")
+
+[node name="WallEast" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 1.5, -20)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallEast"]
+mesh = SubResource("BoxMesh_wallLong")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallEast"]
+shape = SubResource("BoxShape3D_wallLong")
+
+[node name="WallBack" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 6)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallBack"]
+mesh = SubResource("BoxMesh_wallEnd")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallBack"]
+shape = SubResource("BoxShape3D_wallEnd")
+
+[node name="WallFinish" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -45)
+
+[node name="Mesh" type="MeshInstance3D" parent="WallFinish"]
+mesh = SubResource("BoxMesh_wallEnd")
+surface_material_override/0 = SubResource("Mat_wall")
+
+[node name="Collision" type="CollisionShape3D" parent="WallFinish"]
+shape = SubResource("BoxShape3D_wallEnd")
+
+[node name="Crate1" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0.5, -9)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crate1"]
+mesh = SubResource("BoxMesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="Collision" type="CollisionShape3D" parent="Crate1"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="Crate2" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0.5, -19)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crate2"]
+mesh = SubResource("BoxMesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="Collision" type="CollisionShape3D" parent="Crate2"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="Crate3" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0.5, -31)
+
+[node name="Mesh" type="MeshInstance3D" parent="Crate3"]
+mesh = SubResource("BoxMesh_crate")
+surface_material_override/0 = SubResource("Mat_crate")
+
+[node name="Collision" type="CollisionShape3D" parent="Crate3"]
+shape = SubResource("BoxShape3D_crate")
+
+[node name="PlayerSpawn" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 4)
+
+[node name="Enemies" type="Node3D" parent="."]
+
+[node name="Wave0" type="Node3D" parent="Enemies"]
+
+[node name="E0" parent="Enemies/Wave0" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5, 0, -3)
+oneshot = true
+
+[node name="E1" parent="Enemies/Wave0" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 0, -4)
+oneshot = true
+
+[node name="E2" parent="Enemies/Wave0" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -6)
+oneshot = true
+
+[node name="Wave1" type="Node3D" parent="Enemies"]
+
+[node name="Trigger" type="Area3D" parent="Enemies/Wave1" groups=["wave_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -8)
+
+[node name="Collision" type="CollisionShape3D" parent="Enemies/Wave1/Trigger"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="E0" parent="Enemies/Wave1" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -12)
+oneshot = true
+start_active = false
+
+[node name="E1" parent="Enemies/Wave1" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -13)
+oneshot = true
+start_active = false
+
+[node name="E2" parent="Enemies/Wave1" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15)
+oneshot = true
+start_active = false
+oscillate = true
+oscillate_amplitude = 2.0
+oscillate_speed = 1.2
+
+[node name="Wave2" type="Node3D" parent="Enemies"]
+
+[node name="Trigger" type="Area3D" parent="Enemies/Wave2" groups=["wave_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -18)
+
+[node name="Collision" type="CollisionShape3D" parent="Enemies/Wave2/Trigger"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="E0" parent="Enemies/Wave2" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.5, 0, -22)
+oneshot = true
+start_active = false
+
+[node name="E1" parent="Enemies/Wave2" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 0, -23)
+oneshot = true
+start_active = false
+
+[node name="E2" parent="Enemies/Wave2" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -26)
+oneshot = true
+start_active = false
+
+[node name="E3" parent="Enemies/Wave2" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0, -28)
+oneshot = true
+start_active = false
+
+[node name="Wave3" type="Node3D" parent="Enemies"]
+
+[node name="Trigger" type="Area3D" parent="Enemies/Wave3" groups=["wave_trigger"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -30)
+
+[node name="Collision" type="CollisionShape3D" parent="Enemies/Wave3/Trigger"]
+shape = SubResource("BoxShape3D_trigger")
+
+[node name="E0" parent="Enemies/Wave3" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -34)
+oneshot = true
+start_active = false
+
+[node name="E1" parent="Enemies/Wave3" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2, 0, -35)
+oneshot = true
+start_active = false
+
+[node name="E2" parent="Enemies/Wave3" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -38)
+oneshot = true
+start_active = false
+oscillate = true
+oscillate_amplitude = 2.5
+oscillate_speed = 1.5
+
+[node name="E3" parent="Enemies/Wave3" instance=ExtResource("4_target") groups=["enemy"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -41)
+oneshot = true
+start_active = false
+
+[node name="EndLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, -44.5)
+pixel_size = 0.006
+text = "PARCOURS TERMINE"
+font_size = 64
+horizontal_alignment = 1
+
+[node name="BtnRestart" type="AnimatableBody3D" parent="." groups=["action_button"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.2, -44.5)
+script = ExtResource("5_targetscript")
+oneshot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BtnRestart"]
+shape = SubResource("BoxShape3D_btn")
+
+[node name="Mesh" type="Node3D" parent="BtnRestart"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BtnRestart/Mesh"]
+mesh = SubResource("BoxMesh_btn")
+surface_material_override/0 = SubResource("Mat_restart")
+
+[node name="Label" type="Label3D" parent="BtnRestart/Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+pixel_size = 0.005
+text = "RESTART"
+font_size = 40
+
+[node name="BtnExit" type="AnimatableBody3D" parent="." groups=["action_button"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.2, -44.5)
+script = ExtResource("5_targetscript")
+oneshot = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BtnExit"]
+shape = SubResource("BoxShape3D_btn")
+
+[node name="Mesh" type="Node3D" parent="BtnExit"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="BtnExit/Mesh"]
+mesh = SubResource("BoxMesh_btn")
+surface_material_override/0 = SubResource("Mat_exit")
+
+[node name="Label" type="Label3D" parent="BtnExit/Mesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.04)
+pixel_size = 0.005
+text = "EXIT"
+font_size = 40

@@ -1,6 +1,6 @@
 extends Node3D
-## Training — mode entraînement solo. Spawn le joueur en local, gère cibles et
-## boutons tirables. Pas de réseau.
+## Training — mode entraînement solo libre (stand de tir). Pas de réseau.
+## Spawn le joueur, compte les hits, boutons RESET / EXIT tirables.
 
 @export var player_scene: PackedScene
 @export var spawn_path: NodePath
@@ -18,24 +18,16 @@ var elapsed: float = 0.0
 
 
 func _ready() -> void:
-	# Pas de multiplayer en mode entraînement
-	if multiplayer.has_multiplayer_peer():
-		NetworkManager.leave_game()
-
-	# Spawn le joueur local
 	if player_scene:
 		var p: Node = player_scene.instantiate()
-		p.peer_id = 1
 		add_child(p)
 		if spawn:
 			p.global_position = spawn.global_position
 
-	# Connecte tous les targets pour compter les hits
 	for t in targets_root.get_children():
 		if t.has_signal("hit_registered"):
 			t.hit_registered.connect(_on_target_hit)
 
-	# Boutons d'action tirables
 	if btn_reset:
 		btn_reset.knocked_down.connect(_reset)
 	if btn_exit:
@@ -66,7 +58,6 @@ func _reset() -> void:
 	for t in targets_root.get_children():
 		if t.has_method("reset"):
 			t.reset()
-	# Le bouton lui-même est oneshot — on le relève manuellement après reset
 	if btn_reset and btn_reset.has_method("reset"):
 		btn_reset.reset()
 	_update_hud()

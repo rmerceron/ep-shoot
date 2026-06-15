@@ -1,7 +1,7 @@
-[gd_scene format=3 uid="uid://ddy54rjil6xxs"]
+[gd_scene load_steps=11 format=3 uid="uid://ddy54rjil6xxs"]
 
-[ext_resource type="Script" uid="uid://bgkrrv4nftqlj" path="res://scripts/menu.gd" id="1_menu"]
-[ext_resource type="Script" uid="uid://d1uehdr7lpffy" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_menu"]
+[ext_resource type="Script" path="res://scripts/openxr_setup.gd" id="2_xr"]
 [ext_resource type="PackedScene" uid="uid://b1vrpointer" path="res://scenes/VRPointer.tscn" id="3_pointer"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
@@ -17,91 +17,72 @@ sky = SubResource("Sky_menu")
 ambient_light_source = 3
 
 [sub_resource type="BoxMesh" id="BoxMesh_btn"]
-size = Vector3(0.4, 0.15, 0.05)
+size = Vector3(0.5, 0.18, 0.05)
 
-[sub_resource type="StandardMaterial3D" id="Mat_host"]
+[sub_resource type="StandardMaterial3D" id="Mat_start"]
 albedo_color = Color(0.2, 0.7, 0.3, 1)
+emission_enabled = true
+emission = Color(0.1, 0.4, 0.15, 1)
+emission_energy_multiplier = 0.6
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_btn"]
-size = Vector3(0.4, 0.15, 0.05)
-
-[sub_resource type="StandardMaterial3D" id="Mat_join"]
-albedo_color = Color(0.2, 0.4, 0.8, 1)
+size = Vector3(0.5, 0.18, 0.05)
 
 [sub_resource type="StandardMaterial3D" id="Mat_training"]
 albedo_color = Color(1, 0.6, 0.1, 1)
+emission_enabled = true
+emission = Color(0.6, 0.3, 0.05, 1)
+emission_energy_multiplier = 0.6
 
-[node name="Menu" type="Node3D" unique_id=1456189057]
+[node name="Menu" type="Node3D"]
 script = ExtResource("1_menu")
 
-[node name="OpenXRSetup" type="Node" parent="." unique_id=1033269557]
+[node name="OpenXRSetup" type="Node" parent="."]
 script = ExtResource("2_xr")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=584936377]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Env_menu")
 
-[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1282955433]
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=1728330862]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
 
-[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=151963568]
+[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
 tracker = &"left_hand"
 
-[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=641468940]
+[node name="RightController" type="XRController3D" parent="XROrigin3D"]
 tracker = &"right_hand"
 
 [node name="VRPointer" parent="XROrigin3D/RightController" instance=ExtResource("3_pointer")]
 
-[node name="Title" type="Label3D" parent="." unique_id=1099717602]
+[node name="Title" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -1.5)
-text = "EP-SHOOT — VR 1v1"
+text = "EP-SHOOT — PARCOURS DE TIR"
 font_size = 48
 
-[node name="StatusLabel" type="Label3D" parent="." unique_id=2077464872]
+[node name="StatusLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -1.5)
 pixel_size = 0.003
-text = "Choisis : Host ou Join"
+text = "Vise un bouton avec le laser et appuie sur la gâchette"
 
-[node name="IpInput" type="Node3D" parent="." unique_id=1081495420]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, -1.5)
+[node name="BtnStart" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 1.2, -1.5)
 
-[node name="Label" type="Label3D" parent="IpInput" unique_id=1478076494]
-pixel_size = 0.003
-text = "IP host : 127.0.0.1"
-font_size = 28
-
-[node name="BtnHost" type="Area3D" parent="." unique_id=1090603834]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 1.3, -1.5)
-
-[node name="Mesh" type="MeshInstance3D" parent="BtnHost" unique_id=842449276]
+[node name="Mesh" type="MeshInstance3D" parent="BtnStart"]
 mesh = SubResource("BoxMesh_btn")
-surface_material_override/0 = SubResource("Mat_host")
+surface_material_override/0 = SubResource("Mat_start")
 
-[node name="Collision" type="CollisionShape3D" parent="BtnHost" unique_id=1391227358]
+[node name="Collision" type="CollisionShape3D" parent="BtnStart"]
 shape = SubResource("BoxShape3D_btn")
 
-[node name="Label" type="Label3D" parent="BtnHost" unique_id=870571586]
+[node name="Label" type="Label3D" parent="BtnStart"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
 pixel_size = 0.003
-text = "HOST"
-
-[node name="BtnJoin" type="Area3D" parent="." unique_id=220282556]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 1.3, -1.5)
-
-[node name="Mesh" type="MeshInstance3D" parent="BtnJoin" unique_id=1896441656]
-mesh = SubResource("BoxMesh_btn")
-surface_material_override/0 = SubResource("Mat_join")
-
-[node name="Collision" type="CollisionShape3D" parent="BtnJoin" unique_id=243378803]
-shape = SubResource("BoxShape3D_btn")
-
-[node name="Label" type="Label3D" parent="BtnJoin" unique_id=1345499826]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
-pixel_size = 0.003
-text = "JOIN"
+text = "START"
+font_size = 36
 
 [node name="BtnTraining" type="Area3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.05, -1.5)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 1.2, -1.5)
 
 [node name="Mesh" type="MeshInstance3D" parent="BtnTraining"]
 mesh = SubResource("BoxMesh_btn")
@@ -114,8 +95,8 @@ shape = SubResource("BoxShape3D_btn")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
 pixel_size = 0.003
 text = "TRAINING"
-font_size = 32
+font_size = 30
 
-[node name="DirLight" type="DirectionalLight3D" parent="." unique_id=1861508730]
+[node name="DirLight" type="DirectionalLight3D" parent="."]
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)
 shadow_enabled = true

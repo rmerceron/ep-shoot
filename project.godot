@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="EPShoot"
-config/description="VR FPS 1v1 local — Quest 2/3 standalone"
+config/description="VR FPS solo — parcours de tir (Quest 2/3 standalone)"
 run/main_scene="res://scenes/Menu.tscn"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
@@ -19,7 +19,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameState="*res://scripts/game_state.gd"
-NetworkManager="*res://scripts/network_manager.gd"
 
 [display]
 

@@ -1,14 +1,12 @@
 extends Node3D
-## Weapon — arme VR simple : raycast à partir du canon, dégâts via RPC sur la
-## cible. Pensé pour être un emplacement où tu peux ensuite remplacer le mesh
-## par une arme issue de l'asset Weapon System (ou n'importe quel modèle).
+## Weapon — arme VR : raycast depuis le canon, applique les dégâts à la cible.
+## Mode solo : appel direct de take_damage() sur la cible touchée.
 ##
 ## Hiérarchie attendue :
 ##   Weapon (Node3D, ce script)
-##   ├── Mesh (placeholder cube)
-##   ├── Muzzle (Node3D — point d'origine du tir)
-##   ├── Tracer (MeshInstance3D — line / cylinder pour le visuel de balle)
-##   ├── ShootSound (AudioStreamPlayer3D, optionnel)
+##   ├── Mesh (placeholder)
+##   ├── Muzzle (Node3D — origine du tir)
+##   ├── Tracer (MeshInstance3D — visuel de balle)
 ##   └── FireRateTimer (Timer)
 
 signal fired(from: Vector3, to: Vector3)
@@ -16,7 +14,7 @@ signal fired(from: Vector3, to: Vector3)
 @export var damage: int = 25
 @export var max_range: float = 50.0
 @export var fire_rate_seconds: float = 0.15
-@export var auto_fire: bool = true  # full-auto / semi-auto
+@export var auto_fire: bool = true
 
 @onready var muzzle: Node3D = $Muzzle
 @onready var tracer: MeshInstance3D = $Tracer
@@ -57,7 +55,6 @@ func _try_fire() -> void:
 
 
 func _perform_shot() -> void:
-	# Raycast depuis le muzzle, dans sa direction -Z (forward)
 	var space := get_world_3d().direct_space_state
 	var origin := muzzle.global_position
 	var forward := -muzzle.global_transform.basis.z.normalized()
@@ -66,7 +63,6 @@ func _perform_shot() -> void:
 	var query := PhysicsRayQueryParameters3D.create(origin, to)
 	query.collide_with_areas = false
 	query.collide_with_bodies = true
-	# Évite de se toucher soi-même
 	var self_player := _find_owner_player()
 	if self_player:
 		query.exclude = [self_player.get_rid()]
@@ -77,16 +73,7 @@ func _perform_shot() -> void:
 		hit_point = result.position
 		var hit_node = result.collider
 		if hit_node and hit_node.has_method("take_damage"):
-			var attacker_id: int = multiplayer.get_unique_id() if multiplayer.has_multiplayer_peer() else 0
-			if multiplayer.has_multiplayer_peer():
-				# Mode multi : RPC sur l'autorité de la cible (le joueur
-				# touché applique son propre dégât).
-				hit_node.take_damage.rpc_id(
-					hit_node.get_multiplayer_authority(), damage, attacker_id
-				)
-			else:
-				# Mode solo (entraînement) : appel direct.
-				hit_node.take_damage(damage, attacker_id)
+			hit_node.take_damage(damage)
 
 	fired.emit(origin, hit_point)
 	_show_tracer(origin, hit_point)
@@ -102,7 +89,6 @@ func _show_tracer(from: Vector3, to: Vector3) -> void:
 	if tracer.mesh is CylinderMesh:
 		var c: CylinderMesh = tracer.mesh
 		c.height = dist
-	# Cache après 50 ms
 	get_tree().create_timer(0.05).timeout.connect(func():
 		if is_instance_valid(tracer):
 			tracer.visible = false

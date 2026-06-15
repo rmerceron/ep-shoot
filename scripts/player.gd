@@ -1,21 +1,23 @@
 extends CharacterBody3D
-## Player — joueur VR avec XROrigin3D.
+## Player — joueur VR solo avec locomotion au joystick.
 ##
 ## Hiérarchie attendue :
 ##   Player (CharacterBody3D, ce script)
 ##   ├── XROrigin3D
 ##   │   ├── XRCamera3D (la tête)
-##   │   ├── LeftController (XRController3D, tracker = "left_hand")
-##   │   │   └── (mesh main / arme secondaire)
-##   │   └── RightController (XRController3D, tracker = "right_hand")
-##   │       └── WeaponMount (Node3D)
-##   │           └── Weapon (instance de Weapon.tscn)
-##   ├── BodyCollision (CollisionShape3D, capsule grossière)
-##   └── MultiplayerSynchronizer
+##   │   ├── LeftController (XRController3D, "left_hand")   -> stick = déplacement
+##   │   └── RightController (XRController3D, "right_hand") -> stick = snap-turn
+##   │       └── WeaponMount/Weapon (instance de Weapon.tscn)
+##   └── BodyCollision (CollisionShape3D, capsule)
+##
+## Déplacement : stick gauche = avancer/strafe relatif au regard ;
+## stick droit (gauche/droite) = rotation par paliers (snap-turn, confort VR).
 
-const MAX_HEALTH := 100
-
-@export var peer_id: int = 1
+@export var move_speed: float = 2.5
+@export var gravity: float = 9.8
+@export var snap_turn_degrees: float = 30.0
+@export var snap_turn_deadzone: float = 0.7
+@export var move_deadzone: float = 0.15
 
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var camera: XRCamera3D = $XROrigin3D/XRCamera3D
@@ -23,48 +25,74 @@ const MAX_HEALTH := 100
 @onready var left_controller: XRController3D = $XROrigin3D/LeftController
 @onready var weapon: Node3D = $XROrigin3D/RightController/WeaponMount/Weapon
 @onready var body_collision: CollisionShape3D = $BodyCollision
-@onready var sync: MultiplayerSynchronizer = $MultiplayerSynchronizer
 
-var health: int = MAX_HEALTH
+var _can_snap := true
 
 
 func _ready() -> void:
-	# Le MultiplayerSynchronizer doit être configuré pour que SEUL le joueur
-	# local pousse sa transform. set_multiplayer_authority assigne ce node
-	# (et tout son sous-arbre, sauf override) au peer correspondant.
-	set_multiplayer_authority(peer_id)
+	xr_origin.current = true
+	camera.current = true
+	right_controller.button_pressed.connect(_on_right_button_pressed)
+	right_controller.button_released.connect(_on_right_button_released)
 
-	# Le XROrigin3D / casque ne sert qu'au joueur local. Pour le joueur distant
-	# on cache la caméra (sinon elle casserait la nôtre) et on garde juste la
-	# transform du casque + des contrôleurs pour montrer un avatar.
-	var is_local := peer_id == multiplayer.get_unique_id()
-	if not is_local:
-		# Désactive le tracking XR pour ce node (joueur distant)
-		camera.current = false
-		# Le XROrigin3D ne doit PAS être current pour le joueur distant
-		xr_origin.current = false
+
+func _physics_process(delta: float) -> void:
+	_handle_movement(delta)
+	_handle_snap_turn()
+	_follow_head_height()
+
+
+func _handle_movement(delta: float) -> void:
+	var input := left_controller.get_vector2("primary")
+	if input.length() < move_deadzone:
+		input = Vector2.ZERO
+
+	# Direction relative à l'orientation de la tête (yaw uniquement).
+	var cam_basis := camera.global_transform.basis
+	var forward := -cam_basis.z
+	forward.y = 0.0
+	forward = forward.normalized()
+	var right := cam_basis.x
+	right.y = 0.0
+	right = right.normalized()
+
+	var dir := (right * input.x + forward * input.y)
+	if dir.length() > 1.0:
+		dir = dir.normalized()
+
+	velocity.x = dir.x * move_speed
+	velocity.z = dir.z * move_speed
+
+	if not is_on_floor():
+		velocity.y -= gravity * delta
 	else:
-		xr_origin.current = true
-		camera.current = true
-		# Applique l'offset de calibration (voir GameState)
-		xr_origin.transform = GameState.calibration_offset
+		velocity.y = 0.0
 
-	# Branche les inputs uniquement pour le joueur local
-	if is_local:
-		right_controller.button_pressed.connect(_on_right_button_pressed)
-		right_controller.button_released.connect(_on_right_button_released)
+	move_and_slide()
 
 
-func _physics_process(_delta: float) -> void:
-	if peer_id != multiplayer.get_unique_id():
+func _handle_snap_turn() -> void:
+	var x := right_controller.get_vector2("primary").x
+	if absf(x) < snap_turn_deadzone:
+		_can_snap = true
 		return
-	# Met à jour la position du CharacterBody3D pour qu'elle suive
-	# horizontalement la position de la tête (utile pour le hitbox du joueur
-	# distant et pour les collisions futures).
-	var head_pos := xr_origin.transform * camera.transform.origin
-	global_position.x = head_pos.x
-	global_position.z = head_pos.z
-	# La hauteur de la capsule suit la tête
+	if not _can_snap:
+		return
+	_can_snap = false
+	var dir := 1.0 if x > 0.0 else -1.0
+	_rotate_around_head(deg_to_rad(snap_turn_degrees) * -dir)
+
+
+func _rotate_around_head(angle: float) -> void:
+	# Pivote le rig autour de la tête pour que le point de vue reste stable.
+	var head_before := camera.global_position
+	rotate_y(angle)
+	var head_after := camera.global_position
+	global_position += head_before - head_after
+
+
+func _follow_head_height() -> void:
+	# La capsule de collision suit la hauteur réelle de la tête.
 	var head_height: float = clampf(camera.transform.origin.y, 0.5, 2.2)
 	if body_collision and body_collision.shape is CapsuleShape3D:
 		var capsule: CapsuleShape3D = body_collision.shape
@@ -82,39 +110,3 @@ func _on_right_button_released(button_name: String) -> void:
 	if button_name == "trigger_click" or button_name == "trigger":
 		if weapon and weapon.has_method("stop_fire"):
 			weapon.stop_fire()
-
-
-# Appelé par le serveur (autorité du tireur n'est PAS l'autorité de la cible :
-# le tireur émet une RPC vers le peer cible pour décrémenter sa vie côté
-# autorité-cible, puis broadcast l'état via MultiplayerSynchronizer).
-@rpc("any_peer", "call_local", "reliable")
-func take_damage(amount: int, attacker_id: int) -> void:
-	# Seul le joueur cible (autorité de ce node) applique le dégât canonique.
-	if multiplayer.get_remote_sender_id() == 0:
-		# Appel local : ignore (le vrai appel vient du tireur)
-		pass
-	if not is_multiplayer_authority():
-		return
-	health = max(0, health - amount)
-	print("[PLAYER %d] HP=%d (touché par %d)" % [peer_id, health, attacker_id])
-	if health <= 0:
-		_die(attacker_id)
-
-
-func _die(killer_id: int) -> void:
-	if not is_multiplayer_authority():
-		return
-	GameState.add_score.rpc(killer_id)
-	# Respawn simple après 2s
-	await get_tree().create_timer(2.0).timeout
-	health = MAX_HEALTH
-	# Téléporte au spawn (le serveur décide)
-	if multiplayer.is_server():
-		_respawn_at_spawn.rpc(peer_id)
-
-
-@rpc("authority", "call_local", "reliable")
-func _respawn_at_spawn(_target_peer: int) -> void:
-	# La logique de spawn est gérée par l'arène. Ici on remet juste à 0.
-	# Pour un vrai respawn, l'arène écoute ce signal.
-	pass
