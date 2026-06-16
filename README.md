@@ -25,7 +25,7 @@ ep-shoot/
 │   ├── Target.tscn         # cible/ennemi tirable
 │   └── VRPointer.tscn      # laser pointer pour les menus
 ├── scripts/
-│   ├── game_state.gd       # autoload : cibles restantes, chrono, fin de parcours
+│   ├── game_state.gd       # autoload : cibles restantes, chrono, fin, combo de précision
 │   ├── openxr_setup.gd     # init OpenXR + refresh rate Quest
 │   ├── menu.gd             # logique du menu
 │   ├── course.gd           # parcours : spawn joueur, vagues, HUD, écran de fin
@@ -43,7 +43,8 @@ ep-shoot/
 
 - **Stick gauche** : se déplacer (avant/arrière/strafe), relatif au regard.
 - **Stick droit (gauche/droite)** : rotation par paliers (snap-turn, confort VR).
-- **Gâchette droite** : tirer (un laser de visée part du canon).
+- **Gâchette droite** : tirer (un laser de visée part du canon). Enchaîne les
+  touches sans rater pour faire grimper le **combo** et accélérer.
 - **A / X** : recommencer le parcours à tout moment.
 - **B / Y** : revenir au menu à tout moment.
 - Dans les menus : pointe avec le **laser** (contrôleur droit) et tire.
@@ -72,6 +73,18 @@ racine `Player`) : `move_speed`, `snap_turn_degrees`, `gravity`, deadzones.
 
 Stand de tir libre pour tester les armes : silhouettes fixes + une cible mobile,
 boutons RESET / EXIT tirables. Les cibles s'y relèvent automatiquement après 2s.
+
+### Combo de précision (récompense l'accuracy)
+
+Chaque tir qui **touche une cible** augmente le combo : **+10 % de vitesse de
+déplacement par palier**, plafonné à **+100 %** (combo 10 = vitesse ×2). Tout
+tir qui **ne touche pas de cible** — tir dans le vide, dans un mur ou une
+caisse — **remet le combo à zéro**. Plus tu es précis et rapide, plus tu te
+déplaces vite : la précision est directement récompensée par le chrono.
+
+Le combo s'affiche au HUD (couleur qui passe du bleu au orange selon
+l'intensité). Réglages dans `game_state.gd` : `SPEED_STEP` (bonus par palier)
+et `COMBO_MAX` (plafond). Les boutons RESTART/EXIT ne comptent pas dans le combo.
 
 ## Comment c'est construit (pour itérer)
 

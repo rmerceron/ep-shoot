@@ -127,11 +127,20 @@ func _perform_shot() -> void:
 		return
 	var origin: Vector3 = data["origin"]
 	var hit_point: Vector3 = data["to"]
+	var combo_hit := false
 	if data["result"]:
 		hit_point = data["result"].position
 		var hit_node = data["result"].collider
 		if hit_node and hit_node.has_method("take_damage"):
 			hit_node.take_damage(damage)
+			# Les boutons d'action (RESTART/EXIT) ne comptent pas dans le combo.
+			if not hit_node.is_in_group("action_button"):
+				combo_hit = true
+	# Combo : toucher une cible -> +1 ; sinon (vide / mur / caisse) -> reset.
+	if combo_hit:
+		GameState.register_hit()
+	else:
+		GameState.register_miss()
 	_flash = 1.0
 	fired.emit(origin, hit_point)
 

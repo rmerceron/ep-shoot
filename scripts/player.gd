@@ -63,8 +63,10 @@ func _handle_movement(delta: float) -> void:
 	if dir.length() > 1.0:
 		dir = dir.normalized()
 
-	velocity.x = dir.x * move_speed
-	velocity.z = dir.z * move_speed
+	# Vitesse de base modulée par le combo de précision (GameState).
+	var spd := move_speed * GameState.get_speed_multiplier()
+	velocity.x = dir.x * spd
+	velocity.z = dir.z * spd
 
 	if not is_on_floor():
 		velocity.y -= gravity * delta

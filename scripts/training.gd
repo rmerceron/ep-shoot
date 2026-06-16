@@ -18,6 +18,7 @@ var elapsed: float = 0.0
 
 
 func _ready() -> void:
+	GameState.reset_combo()
 	if player_scene:
 		var p: Node = player_scene.instantiate()
 		add_child(p)

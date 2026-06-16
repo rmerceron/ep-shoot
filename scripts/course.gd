@@ -21,6 +21,7 @@ extends Node3D
 
 var _time_label: Label3D
 var _targets_label: Label3D
+var _combo_label: Label3D
 var _player: Node3D
 
 
@@ -53,6 +54,7 @@ func _ready() -> void:
 
 	GameState.targets_changed.connect(_on_targets_changed)
 	GameState.course_finished.connect(_on_course_finished)
+	GameState.combo_changed.connect(_on_combo_changed)
 	if end_label:
 		end_label.visible = false
 
@@ -86,6 +88,14 @@ func _attach_hud(player: Node) -> void:
 	_time_label.position = Vector3(0.18, 0, 0)
 	hud.add_child(_time_label)
 
+	_combo_label = Label3D.new()
+	_combo_label.pixel_size = 0.0018
+	_combo_label.font_size = 56
+	_combo_label.position = Vector3(0, 0.085, 0)
+	_combo_label.modulate = Color(0.5, 0.8, 1.0)
+	hud.add_child(_combo_label)
+	_update_combo_label(GameState.combo, GameState.get_speed_multiplier())
+
 	# Indice raccourcis manette.
 	var hint := Label3D.new()
 	hint.pixel_size = 0.0012
@@ -109,6 +119,22 @@ func _on_controller_button(button_name: String) -> void:
 			_restart()
 		"by_button":
 			_exit_to_menu()
+
+
+func _on_combo_changed(combo: int, multiplier: float) -> void:
+	_update_combo_label(combo, multiplier)
+
+
+func _update_combo_label(combo: int, multiplier: float) -> void:
+	if _combo_label == null:
+		return
+	if combo <= 0:
+		_combo_label.text = ""
+		return
+	var bonus := int(round((multiplier - 1.0) * 100.0))
+	_combo_label.text = "COMBO x%d  (+%d%% vitesse)" % [combo, bonus]
+	var t := clampf(float(combo) / float(GameState.COMBO_MAX), 0.0, 1.0)
+	_combo_label.modulate = Color(0.5, 0.8, 1.0).lerp(Color(1.0, 0.55, 0.1), t)
 
 
 func _on_wave_trigger(body: Node, trig: Area3D) -> void:
