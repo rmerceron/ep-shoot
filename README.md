@@ -17,7 +17,7 @@ parcours le plus vite possible.
 ep-shoot/
 ├── project.godot           # config Godot (OpenXR + Forward Mobile), 1 autoload : GameState
 ├── scenes/
-│   ├── Menu.tscn           # menu d'entrée : START (parcours) / TRAINING (stand libre)
+│   ├── Menu.tscn           # menu : START / TRAINING + scoreboard (top 10 chronos)
 │   ├── Course.tscn         # LE parcours : couloir + couvertures + 4 vagues d'ennemis
 │   ├── Training.tscn       # stand de tir libre (test des armes)
 │   ├── Player.tscn         # joueur VR (XROrigin + 2 contrôleurs + arme)
@@ -25,7 +25,7 @@ ep-shoot/
 │   ├── Target.tscn         # cible/ennemi tirable
 │   └── VRPointer.tscn      # laser pointer pour les menus
 ├── scripts/
-│   ├── game_state.gd       # autoload : cibles restantes, chrono, fin, combo de précision
+│   ├── game_state.gd       # autoload : chrono, combo, scoreboard persistant (user://scores.json)
 │   ├── openxr_setup.gd     # init OpenXR + refresh rate Quest
 │   ├── menu.gd             # logique du menu
 │   ├── course.gd           # parcours : spawn joueur, vagues, HUD, écran de fin
@@ -87,6 +87,21 @@ déplaces vite : la précision est directement récompensée par le chrono.
 Le combo s'affiche au HUD (couleur qui passe du bleu au orange selon
 l'intensité). Réglages dans `game_state.gd` : `SPEED_STEP` (bonus par palier)
 et `COMBO_MAX` (plafond). Les boutons RESTART/EXIT ne comptent pas dans le combo.
+
+### Scoreboard (top 10 chronos)
+
+Le menu affiche sur le côté gauche les **10 meilleurs temps** (pseudo + chrono),
+triés du plus rapide au plus lent. À la fin d'un parcours, si ton temps entre
+dans le top 10, tu saisis tes **initiales façon arcade** :
+
+- **Stick gauche haut/bas** : changer la lettre de la case courante (A-Z).
+- **Stick gauche gauche/droite** : passer d'une case à l'autre (3 lettres).
+- **Gâchette** : valider et enregistrer.
+
+Si le temps n'entre pas dans le top 10, l'étape de saisie est sautée
+(« Pas dans le top 10 »). Les scores sont sauvegardés dans
+`user://scores.json` et persistent entre les sessions (sur le casque ou en
+éditeur). Pour repartir de zéro, supprime ce fichier.
 
 ## Comment c'est construit (pour itérer)
 
