@@ -55,7 +55,9 @@ racine `Player`) : `move_speed`, `snap_turn_degrees`, `gravity`, deadzones.
 ### Le parcours (Course.tscn)
 
 1. Au menu, tire sur **START** (vert).
-2. Tu démarres en haut d'un couloir d'environ 50 m. Le chrono se lance.
+2. Un **décompte 3‑2‑1‑GO** se lance : tu ne peux ni bouger ni tirer tant
+   qu'il n'est pas terminé, et le chrono ne démarre qu'au **GO** (au sommet
+   d'un couloir d'environ 50 m).
 3. Avance au stick. Les ennemis sont organisés en **4 vagues** :
    - La 1ʳᵉ vague est déjà debout près du départ.
    - Les suivantes sont **couchées** et se relèvent (pop-up) quand tu franchis

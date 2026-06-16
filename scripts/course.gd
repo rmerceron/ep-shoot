@@ -22,7 +22,9 @@ extends Node3D
 var _time_label: Label3D
 var _targets_label: Label3D
 var _combo_label: Label3D
+var _countdown_label: Label3D
 var _player: Node3D
+var _total: int = 0
 
 
 func _ready() -> void:
@@ -58,7 +60,31 @@ func _ready() -> void:
 	if end_label:
 		end_label.visible = false
 
-	GameState.start_course(enemies.size())
+	_total = enemies.size()
+	GameState.prepare(_total)
+	if _player:
+		_player.input_enabled = false
+	_run_countdown()
+
+
+func _run_countdown() -> void:
+	# Décompte 3-2-1-GO : chrono figé et joueur gelé jusqu'au GO.
+	for n in [3, 2, 1]:
+		if not is_inside_tree():
+			return
+		if _countdown_label:
+			_countdown_label.text = str(n)
+		await get_tree().create_timer(1.0).timeout
+	if not is_inside_tree():
+		return
+	if _countdown_label:
+		_countdown_label.text = "GO !"
+	GameState.start_course(_total)
+	if _player:
+		_player.input_enabled = true
+	await get_tree().create_timer(0.7).timeout
+	if is_inside_tree() and _countdown_label:
+		_countdown_label.text = ""
 
 
 func _process(_delta: float) -> void:
@@ -95,6 +121,14 @@ func _attach_hud(player: Node) -> void:
 	_combo_label.modulate = Color(0.5, 0.8, 1.0)
 	hud.add_child(_combo_label)
 	_update_combo_label(GameState.combo, GameState.get_speed_multiplier())
+
+	_countdown_label = Label3D.new()
+	_countdown_label.pixel_size = 0.004
+	_countdown_label.font_size = 96
+	_countdown_label.position = Vector3(0, 0.32, 0)
+	_countdown_label.modulate = Color(1, 0.95, 0.4)
+	_countdown_label.text = ""
+	hud.add_child(_countdown_label)
 
 	# Indice raccourcis manette.
 	var hint := Label3D.new()

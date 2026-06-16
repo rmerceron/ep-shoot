@@ -20,6 +20,16 @@ var course_active: bool = false
 var combo: int = 0
 
 
+## Prépare l'affichage avant le décompte (chrono figé, rien d'actif).
+func prepare(total: int) -> void:
+	total_targets = total
+	eliminated = 0
+	elapsed = 0.0
+	course_active = false
+	reset_combo()
+	targets_changed.emit(eliminated, total_targets)
+
+
 func start_course(total: int) -> void:
 	total_targets = total
 	eliminated = 0

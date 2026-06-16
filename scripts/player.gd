@@ -28,6 +28,8 @@ extends CharacterBody3D
 @onready var weapon: Node3D = $XROrigin3D/RightController/WeaponMount/Weapon
 @onready var body_collision: CollisionShape3D = $BodyCollision
 
+var input_enabled := true  # géré par la course (décompte de départ)
+
 var _can_snap := true
 
 
@@ -47,7 +49,7 @@ func _physics_process(delta: float) -> void:
 
 func _handle_movement(delta: float) -> void:
 	var input := left_controller.get_vector2("primary")
-	if input.length() < move_deadzone:
+	if not input_enabled or input.length() < move_deadzone:
 		input = Vector2.ZERO
 
 	# Direction relative à l'orientation de la tête (yaw uniquement).
@@ -106,6 +108,8 @@ func _follow_head_height() -> void:
 
 
 func _on_right_button_pressed(button_name: String) -> void:
+	if not input_enabled:
+		return
 	if button_name == "trigger_click" or button_name == "trigger":
 		if weapon and weapon.has_method("start_fire"):
 			weapon.start_fire()
