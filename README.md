@@ -49,6 +49,15 @@ ep-shoot/
 - **B / Y** : revenir au menu à tout moment.
 - Dans les menus : pointe avec le **laser** (contrôleur droit) et tire.
 
+**Contrôles bureau (test sans casque, auto-détectés si OpenXR n'est pas lancé) :**
+
+- **ZQSD / WASD** (ou flèches) : se déplacer.
+- **Souris** : orienter la vue (l'arme suit la visée). **Échap** : libérer/recapturer la souris.
+- **Clic gauche** : tirer.
+- **Menu** : touche **1** ou **Entrée** = parcours, **2** = entraînement (ou clic sur les boutons).
+- **Fin de parcours / saisie d'initiales** : **flèches** haut/bas = lettre, gauche/droite = case, **Entrée** = valider.
+- **R** = recommencer, **M** = menu (à tout moment dans le parcours).
+
 Les réglages de locomotion sont exposés sur `Player.tscn` (inspector du nœud
 racine `Player`) : `move_speed`, `snap_turn_degrees`, `gravity`, deadzones.
 
@@ -61,7 +70,7 @@ racine `Player`) : `move_speed`, `snap_turn_degrees`, `gravity`, deadzones.
 3. Avance au stick. Les ennemis sont organisés en **4 vagues** :
    - La 1ʳᵉ vague est déjà debout près du départ.
    - Les suivantes sont **couchées** et se relèvent (pop-up) quand tu franchis
-     une **zone de déclenchement** invisible en avançant.
+	 une **zone de déclenchement** invisible en avançant.
 4. Quelques **caisses** servent de couverture / décor.
 5. Élimine **toutes** les cibles (14 au total) pour terminer. Le HUD ancré
    devant toi affiche `Cibles : x / 14` et le temps.
@@ -164,9 +173,9 @@ Le compteur total s'ajuste automatiquement (compte des nœuds du groupe `enemy`)
    import se plaint, ouvre chaque scène une fois puis sauvegarde.
 3. F5 : le menu s'affiche en mode écran (la caméra XR devient une caméra
    classique tant qu'OpenXR n'est pas initialisé).
-4. Sans casque, le test reste limité (pas de tracking ni de sticks), mais tu
-   peux vérifier que les scènes chargent et cliquer les boutons du menu à la
-   souris (fallback `input_event`).
+4. Sans casque, le **mode bureau** s'active automatiquement : tu peux jouer
+   tout le parcours au clavier/souris (cf. « Contrôles bureau » plus haut),
+   y compris la saisie d'initiales. Idéal pour itérer sans enfiler le casque.
 
 ## Build APK pour Quest
 

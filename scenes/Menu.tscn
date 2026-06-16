@@ -1,7 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://ddy54rjil6xxs"]
+[gd_scene format=3 uid="uid://ddy54rjil6xxs"]
 
-[ext_resource type="Script" path="res://scripts/menu.gd" id="1_menu"]
-[ext_resource type="Script" path="res://scripts/openxr_setup.gd" id="2_xr"]
+[ext_resource type="Script" uid="uid://bgkrrv4nftqlj" path="res://scripts/menu.gd" id="1_menu"]
+[ext_resource type="Script" uid="uid://d1uehdr7lpffy" path="res://scripts/openxr_setup.gd" id="2_xr"]
 [ext_resource type="PackedScene" uid="uid://b1vrpointer" path="res://scenes/VRPointer.tscn" id="3_pointer"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_sky"]
@@ -34,81 +34,80 @@ emission_enabled = true
 emission = Color(0.6, 0.3, 0.05, 1)
 emission_energy_multiplier = 0.6
 
-[node name="Menu" type="Node3D"]
+[node name="Menu" type="Node3D" unique_id=444435421]
 script = ExtResource("1_menu")
 
-[node name="OpenXRSetup" type="Node" parent="."]
+[node name="OpenXRSetup" type="Node" parent="." unique_id=1734927562]
 script = ExtResource("2_xr")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=40561467]
 environment = SubResource("Env_menu")
 
-[node name="XROrigin3D" type="XROrigin3D" parent="."]
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=1080179717]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=700570650]
 
-[node name="LeftController" type="XRController3D" parent="XROrigin3D"]
+[node name="LeftController" type="XRController3D" parent="XROrigin3D" unique_id=225339043]
 tracker = &"left_hand"
 
-[node name="RightController" type="XRController3D" parent="XROrigin3D"]
+[node name="RightController" type="XRController3D" parent="XROrigin3D" unique_id=481185157]
 tracker = &"right_hand"
 
-[node name="VRPointer" parent="XROrigin3D/RightController" instance=ExtResource("3_pointer")]
+[node name="VRPointer" parent="XROrigin3D/RightController" unique_id=1998954594 instance=ExtResource("3_pointer")]
 
-[node name="Title" type="Label3D" parent="."]
+[node name="Title" type="Label3D" parent="." unique_id=954245027]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.7, -1.5)
 text = "EP-SHOOT — PARCOURS DE TIR"
 font_size = 48
 
-[node name="StatusLabel" type="Label3D" parent="."]
+[node name="StatusLabel" type="Label3D" parent="." unique_id=406740380]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -1.5)
 pixel_size = 0.003
 text = "Vise un bouton avec le laser et appuie sur la gâchette"
 
-[node name="BtnStart" type="Area3D" parent="."]
+[node name="BtnStart" type="Area3D" parent="." unique_id=2076624877]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.35, 1.2, -1.5)
 
-[node name="Mesh" type="MeshInstance3D" parent="BtnStart"]
+[node name="Mesh" type="MeshInstance3D" parent="BtnStart" unique_id=1029019333]
 mesh = SubResource("BoxMesh_btn")
 surface_material_override/0 = SubResource("Mat_start")
 
-[node name="Collision" type="CollisionShape3D" parent="BtnStart"]
+[node name="Collision" type="CollisionShape3D" parent="BtnStart" unique_id=1430151123]
 shape = SubResource("BoxShape3D_btn")
 
-[node name="Label" type="Label3D" parent="BtnStart"]
+[node name="Label" type="Label3D" parent="BtnStart" unique_id=2004526395]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
 pixel_size = 0.003
 text = "START"
 font_size = 36
 
-[node name="BtnTraining" type="Area3D" parent="."]
+[node name="BtnTraining" type="Area3D" parent="." unique_id=1465090121]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.35, 1.2, -1.5)
 
-[node name="Mesh" type="MeshInstance3D" parent="BtnTraining"]
+[node name="Mesh" type="MeshInstance3D" parent="BtnTraining" unique_id=669939820]
 mesh = SubResource("BoxMesh_btn")
 surface_material_override/0 = SubResource("Mat_training")
 
-[node name="Collision" type="CollisionShape3D" parent="BtnTraining"]
+[node name="Collision" type="CollisionShape3D" parent="BtnTraining" unique_id=1186704034]
 shape = SubResource("BoxShape3D_btn")
 
-[node name="Label" type="Label3D" parent="BtnTraining"]
+[node name="Label" type="Label3D" parent="BtnTraining" unique_id=126849690]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.03)
 pixel_size = 0.003
 text = "TRAINING"
 font_size = 30
 
-[node name="ScoreTitle" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 1.85, -1.3)
+[node name="ScoreTitle" type="Label3D" parent="." unique_id=588323845]
+transform = Transform3D(-0.089902475, 0, 0.9959506, 0, 1, 0, -0.9959506, 0, -0.089902475, -2.55204, 1.85, -0.29283473)
 text = "MEILLEURS TEMPS"
 font_size = 40
 
-[node name="ScoreList" type="Label3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.65, 1.5, -1.3)
+[node name="ScoreList" type="Label3D" parent="." unique_id=1973427468]
+transform = Transform3D(-0.0831909, 0, 0.99653363, 0, 1, 0, -0.99653363, 0, -0.0831909, -2.1598253, 1.5, 0.16212183)
 pixel_size = 0.0024
 text = "Aucun temps enregistre."
-font_size = 32
 horizontal_alignment = 0
 
-[node name="DirLight" type="DirectionalLight3D" parent="."]
+[node name="DirLight" type="DirectionalLight3D" parent="." unique_id=1345724284]
 transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.612, 0, 5, 0)
 shadow_enabled = true

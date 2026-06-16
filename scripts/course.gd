@@ -39,6 +39,7 @@ var _entry_labels: Array = []
 var _letters := [0, 0, 0]
 var _slot := 0
 var _nav_ready := true
+var _desktop := false
 
 
 func _ready() -> void:
@@ -76,9 +77,40 @@ func _ready() -> void:
 
 	_total = enemies.size()
 	GameState.prepare(_total)
+	_desktop = not get_viewport().use_xr
 	if _player:
 		_player.input_enabled = false
 	_run_countdown()
+
+
+func _input(event: InputEvent) -> void:
+	# Contrôles clavier en mode bureau (test sans casque).
+	if not _desktop:
+		return
+	if not (event is InputEventKey and event.pressed and not event.echo):
+		return
+	if _entry_active:
+		match event.keycode:
+			KEY_UP:
+				_letters[_slot] = (_letters[_slot] + 1) % 26
+				_refresh_entry_ui()
+			KEY_DOWN:
+				_letters[_slot] = (_letters[_slot] + 25) % 26
+				_refresh_entry_ui()
+			KEY_LEFT:
+				_slot = (_slot + 2) % 3
+				_refresh_entry_ui()
+			KEY_RIGHT:
+				_slot = (_slot + 1) % 3
+				_refresh_entry_ui()
+			KEY_ENTER, KEY_KP_ENTER:
+				_confirm_name()
+		return
+	match event.keycode:
+		KEY_R:
+			_restart()
+		KEY_M:
+			_exit_to_menu()
 
 
 func _run_countdown() -> void:
@@ -274,7 +306,7 @@ func _start_name_entry() -> void:
 func _refresh_entry_ui() -> void:
 	for i in _entry_labels.size():
 		var l: Label3D = _entry_labels[i]
-		l.text = char(65 + _letters[i])
+		l.text = String.chr(65 + _letters[i])
 		l.modulate = Color(1, 1, 0.4) if i == _slot else Color(0.8, 0.85, 0.9)
 
 
@@ -311,7 +343,7 @@ func _confirm_name() -> void:
 	_entry_active = false
 	var nm := ""
 	for i in 3:
-		nm += char(65 + _letters[i])
+		nm += String.chr(65 + _letters[i])
 	GameState.add_score(nm, _finish_time)
 	if is_instance_valid(_entry_root):
 		_entry_root.queue_free()

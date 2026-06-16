@@ -75,7 +75,6 @@ transform = Transform3D(0.866, -0.354, 0.354, 0, 0.707, 0.707, -0.5, -0.612, 0.6
 shadow_enabled = true
 
 [node name="Floor" type="StaticBody3D" parent="." unique_id=1119316593]
-visible = false
 
 [node name="Mesh" type="MeshInstance3D" parent="Floor" unique_id=652270834]
 mesh = SubResource("BoxMesh_floor")
@@ -86,7 +85,6 @@ shape = SubResource("BoxShape3D_floor")
 
 [node name="WallNorth" type="StaticBody3D" parent="." unique_id=1788761061]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, -5)
-visible = false
 
 [node name="Mesh" type="MeshInstance3D" parent="WallNorth" unique_id=1334451090]
 mesh = SubResource("BoxMesh_wall")
@@ -107,7 +105,6 @@ shape = SubResource("BoxShape3D_wall")
 
 [node name="WallEast" type="StaticBody3D" parent="." unique_id=1885589742]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, 5, 1.5, 0)
-visible = false
 
 [node name="Mesh" type="MeshInstance3D" parent="WallEast" unique_id=839850950]
 mesh = SubResource("BoxMesh_wall")
@@ -118,7 +115,6 @@ shape = SubResource("BoxShape3D_wall")
 
 [node name="WallWest" type="StaticBody3D" parent="." unique_id=1065784160]
 transform = Transform3D(0, 0, -1, 0, 1, 0, 1, 0, 0, -5, 1.5, 0)
-visible = false
 
 [node name="Mesh" type="MeshInstance3D" parent="WallWest" unique_id=1544406164]
 mesh = SubResource("BoxMesh_wall")
@@ -131,7 +127,6 @@ shape = SubResource("BoxShape3D_wall")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3)
 
 [node name="Targets" type="Node3D" parent="." unique_id=1840710463]
-visible = false
 
 [node name="Target1" parent="Targets" unique_id=161807253 instance=ExtResource("4_target")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0, -2)

@@ -12,6 +12,8 @@ extends Node3D
 @onready var pointer: Node = $XROrigin3D/RightController/VRPointer
 @onready var score_list: Label3D = get_node_or_null("ScoreList")
 
+var _desktop := false
+
 
 func _ready() -> void:
 	if pointer:
@@ -19,6 +21,10 @@ func _ready() -> void:
 	# Fallback souris pour debug en éditeur sans casque.
 	btn_start.input_event.connect(_on_btn_input.bind("start"))
 	btn_training.input_event.connect(_on_btn_input.bind("training"))
+	_desktop = not get_viewport().use_xr
+	if _desktop:
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+		get_viewport().physics_object_picking = true
 	_refresh_scoreboard()
 
 
@@ -36,6 +42,17 @@ func _refresh_scoreboard() -> void:
 			text += "\n"
 		text += "%2d. %s   %5.1f s" % [i + 1, str(e["name"]), float(e["time"])]
 	score_list.text = text
+
+
+func _input(event: InputEvent) -> void:
+	if not _desktop:
+		return
+	if event is InputEventKey and event.pressed and not event.echo:
+		match event.keycode:
+			KEY_1, KEY_ENTER, KEY_KP_ENTER:
+				_handle_action("start")
+			KEY_2:
+				_handle_action("training")
 
 
 func _on_pointer_clicked(area: Area3D) -> void:
